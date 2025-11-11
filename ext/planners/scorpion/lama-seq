@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Get the directory of the script
+SCRIPT_DIR=$(dirname "$0")
+
+$SCRIPT_DIR/scorpion.sif --alias seq-sat-lama-2011 $@

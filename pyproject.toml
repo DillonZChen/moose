@@ -1,0 +1,23 @@
+[project]
+name = "Moose"
+version = "0.1.0"
+description = "Generalised Planning via Regression"
+authors = [{ name = "Dillon Z. Chen", email = "dillon.chen1@gmail.com" }]
+license = "MIT"
+
+[tool.isort]
+profile = "black"
+line_length = 119
+skip = ["ext/", ".venv/", "venv/", "benchmarks/", "experiments/baselines/"]
+
+[tool.black]
+line-length = 119
+extend-exclude = "ext/|.venv/|venv/|benchmarks/|experiments/baselines/"
+
+[tool.pytest.ini_options]
+addopts = "-x"
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "[%(asctime)s %(filename)s::%(lineno)s %(levelname)s] %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+testpaths = ["tests"]

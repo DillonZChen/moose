@@ -1,0 +1,83 @@
+import argparse
+import logging
+import sys
+from typing import Optional
+
+import termcolor as tc
+
+
+class RelativeSeconds(logging.Formatter):
+    def format(self, record):
+        record.relativeCreated = f"{record.relativeCreated / 1000:.4f}s"
+        return super().format(record)
+
+
+class ColoredFormatter(RelativeSeconds):
+    def color(self, level: str, content: str):
+        match level:
+            case "DEBUG":
+                color = "blue"
+            case "INFO":
+                color = "green"
+            case "WARNING":
+                color = "yellow"
+            case "ERROR":
+                color = "red"
+            case "CRITICAL":
+                color = "red"
+            case _:
+                color = "white"
+        return tc.colored(content, color=color, attrs=["bold"])
+
+    def format(self, record):
+        # make the log level colored with colour only
+        level = record.levelname
+        record.levelname = self.color(level, level)
+        return super().format(record)
+
+
+def init_logger(log_level=logging.INFO):
+    formatter = ColoredFormatter("[%(levelname)s t=%(relativeCreated)s] %(message)s")
+    logging.basicConfig(stream=sys.stdout, level=log_level)
+    logging.root.handlers[0].setFormatter(formatter)
+
+
+def mat_to_str(
+    mat: list[list],
+    rjust: Optional[list[bool]] = None,
+    space: Optional[list[bool]] = None,
+) -> str:
+    if not mat:
+        logging.warning("Empty matrix")
+        return ""
+
+    max_row_length = max(len(row) for row in mat)
+    for i in range(len(mat)):
+        row = list(mat[i]) + [""] * (max_row_length - len(mat[i]))
+        mat[i] = row
+    max_lengths = [max(len(str(row[i])) + 1 for row in mat) for i in range(len(mat[0]))]
+
+    ret = []
+    for row in mat:
+        row_ret = []
+        for i, cell in enumerate(row):
+            if cell == "*":
+                cell = "*" * (max_lengths[i] - 1)
+            if rjust is not None and rjust[i]:
+                cell = str(cell).rjust(max_lengths[i])
+            else:
+                cell = str(cell).ljust(max_lengths[i])
+            row_ret.append(cell)
+            if space is not None and space[i]:
+                row_ret[i] += " "
+        ret.append("".join(row_ret).rstrip())
+    return "\n".join(ret)
+
+
+def log_opts(desc: str, opts: argparse.Namespace) -> None:
+    coloured_mat = []
+    for k, v in vars(opts).items():
+        v = tc.colored(v, "cyan")
+        coloured_mat.append([k, v])
+    mat_str = mat_to_str(mat=coloured_mat)
+    logging.info(f"{desc.upper()} OPTIONS:\n{mat_str}")
