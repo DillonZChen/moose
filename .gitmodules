@@ -1,6 +1,6 @@
 [submodule "ext/nraxioms2disjpres"]
 	path = ext/nraxioms2disjpres
-	url = https://github.com/DillonZChen/nraxioms2disjpres.git
+	url = https://github.com/DillonZChen/nraxioms2disjpres
 [submodule "benchmarks"]
 	path = benchmarks
 	url = https://github.com/DillonZChen/moose-dataset.git
